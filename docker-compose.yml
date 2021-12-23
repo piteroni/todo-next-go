@@ -1,0 +1,47 @@
+version: "3"
+
+services:
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    hostname: api
+    volumes:
+      - ./backend:/app
+    ports:
+      - 9000:9000
+  db:
+    build:
+      context: ./
+      dockerfile: db.Dockerfile
+    hostname: db
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+    volumes:
+      - d5cb7e4f6a913010730639af:/var/lib/mysql
+      - c73770fca12f1edae8a12997:/var/run/mysqld
+      - ./dbaccess.cnf:/dbaccess.cnf
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: todo_next_rails
+      MYSQL_ROOT_PASSWORD: password
+  ui:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    hostname: ui
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - 3000:3000
+
+volumes:
+  # database data
+  d5cb7e4f6a913010730639af:
+  # database socket
+  c73770fca12f1edae8a12997:
+  # node_modules
+  598806d81172e66e9802586d:
